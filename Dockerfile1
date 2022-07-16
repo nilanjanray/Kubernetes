@@ -1,0 +1,16 @@
+FROM ubuntu:20.04
+
+ENV CONTAINER_TIMEZONE="Europe/Brussels"
+RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
+#RUN apt autoremove && apt autoclean -y
+#RUN apt clean
+RUN apt-get update
+RUN apt-get upgrade -y 
+RUN apt-get install apache2 -y
+RUN apt-get install apache2-utils -y 
+RUN apt-get clean 
+EXPOSE 80
+
+ENTRYPOINT ["/usr/sbin/apache2"]
+CMD ["-D", "FOREGROUND"]
+#CMD [“apache2ctl”, “-D”, “FOREGROUND”]
