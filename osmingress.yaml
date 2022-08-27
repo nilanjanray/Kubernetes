@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osm-apache-ingress
+  namespace: checkapps
+  annotations:
+    #nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/configuration-snippet: "proxy_set_header X-SSL-CERT $ssl_client_escaped_cert;"
+    nginx.ingress.kubernetes.io/server-snippet: "ssl_verify_client optional_no_ca;"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/checkpath"
+        backend:
+          service:
+            name: apache-deployment-service
+            port:
+              number: 8082
+---
+kind: IngressBackend
+apiVersion: policy.openservicemesh.io/v1alpha1
+metadata:
+  name: osm-http
+  namespace: checkapps
+spec:
+  backends:
+  - name: apache-deployment-service
+    port:
+      number: 8082
+      protocol: https
+    tls:
+      skipClientCertValidation: false
+  sources:
+  - kind: Service
+    namespace: "$nginx_ingress_namespace"
+    name: "$nginx_ingress_service"
+  - kind: AuthenticatedPrincipal
+    name: untrusted-client.cluster.local #ingress-nginx.ingress-nginx.cluster.local
