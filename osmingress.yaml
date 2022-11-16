@@ -13,7 +13,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: nealkube.info
+    http:
       paths:
       - pathType: Prefix
         path: "/checkpath"

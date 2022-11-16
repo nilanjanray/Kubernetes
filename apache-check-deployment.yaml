@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: checkapps
+  labels:
+    app.kubernetes.io/name: checkapps
+    app.kubernetes.io/instance: checkapps
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +24,7 @@ spec:
     spec:
       containers:
         - name: apache-deployment
-          image: apache/apache2
+          image: apache/apache2:3.3
           ports:
             - containerPort: 8081
           imagePullPolicy: Never
